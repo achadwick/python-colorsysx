@@ -1,0 +1,20 @@
+[build-system]
+requires = ["flit_core>=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "colorsysx"
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Topic :: Multimedia :: Graphics :: Presentation",
+    "Topic :: Software Development :: Libraries",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dynamic = ["version", "description"]
+
+[[authors]]
+name = "Andrew Chadwick"
+email = "a.t.chadwick@gmail.com"
