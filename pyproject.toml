@@ -7,7 +7,7 @@ name = "colorsysx"
 description = "Extra, human-relevant, colour spaces derived from RGB."
 license = {file = "LICENSE"}
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Topic :: Multimedia :: Graphics :: Presentation",
     "Topic :: Software Development :: Libraries",
