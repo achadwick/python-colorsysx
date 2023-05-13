@@ -18,7 +18,7 @@ colorsysx.weights module for details.
 
 """
 
-__version__ = "0.1a1"
+__version__ = "0.1a2"
 
 # Imports::
 
