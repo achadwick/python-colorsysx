@@ -1,4 +1,5 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/achadwick/python-colorsysx/python-package.yml?branch=main)
+![GitHub](https://img.shields.io/github/license/achadwick/python-colorsysx)
 
 # colorsysX: extra, human-relevant, colour spaces derived from RGB
 
