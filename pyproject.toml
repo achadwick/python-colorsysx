@@ -4,6 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "colorsysx"
+description = "Extra, human-relevant, colour spaces derived from RGB."
 license = {file = "LICENSE"}
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -13,7 +14,8 @@ classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dynamic = ["version", "description"]
+dynamic = ["version"]
+readme = "README.md"
 
 [[authors]]
 name = "Andrew Chadwick"
