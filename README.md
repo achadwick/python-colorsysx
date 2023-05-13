@@ -43,5 +43,5 @@ Unlike `colorsysx`, the functions accept optional weighting parameters,
 which can be used to tune the colour model being used.
 
 [1]: https://en.wikipedia.org/wiki/YUV#Related_color_models
-[2]: https://doi.org/10.1006/cgip.1993.1019
-[3]: https://chilliant.com/rgb2hsv.html
+[2]: https://chilliant.com/rgb2hsv.html
+[3]: https://doi.org/10.1006/cgip.1993.1019
