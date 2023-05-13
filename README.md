@@ -1,5 +1,7 @@
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/achadwick/python-colorsysx/python-package.yml?branch=main)
+![PyPI](https://img.shields.io/pypi/v/colorsysx)
 ![GitHub](https://img.shields.io/github/license/achadwick/python-colorsysx)
+![GitHub issues](https://img.shields.io/github/issues/achadwick/python-colorsysx)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/achadwick/python-colorsysx/python-package.yml?branch=main)
 
 # colorsysX
 
