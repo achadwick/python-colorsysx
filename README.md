@@ -1,3 +1,5 @@
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/achadwick/python-colorsysx/python-package.yml?branch=main)
+
 # colorsysX: extra, human-relevant, colour spaces derived from RGB
 
 This package extends the standard Python library's `colorsys` module
