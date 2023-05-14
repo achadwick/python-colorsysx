@@ -82,7 +82,7 @@ def test_round_trips():
             # Do some numeric analysis of the number of ops,
             # figure out why it's so big.
             # It's probably fine if it's <= 1/256 though...
-            fudge = 10
+            fudge = 9
             assert abs(r1 - r0) <= EPSILON*fudge
             assert abs(g1 - g0) <= EPSILON*fudge
             assert abs(b1 - b0) <= EPSILON*fudge

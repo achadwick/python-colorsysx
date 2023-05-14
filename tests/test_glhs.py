@@ -104,7 +104,7 @@ def test_equivalences():
         assert abs(gh2 - h2) <= EPSILON*fudge
 
         # Use more fudge for the standalone HCY stuff
-        fudge = 4
+        fudge = 2
 
         # "HCY" luma-based model
         (gl3, gh3, gs3) = colorsysx.rgb_to_glhs(
