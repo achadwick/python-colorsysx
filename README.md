@@ -32,7 +32,7 @@ provide any of the other similar models.
 # For developers
 
 ColorsysX is library code, with no bundled scripts. Other projects are
-free to depend on it inthe normal way.
+free to depend on it in the normal way.
 
 ## Installation
 
