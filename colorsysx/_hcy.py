@@ -32,6 +32,7 @@ References:
 
 from . import weights
 from ._helpers import clamp
+from . import _swizzle
 
 
 # Default values::
@@ -102,32 +103,33 @@ def hcy_to_rgb(h, c, y, w_rgb=None):
     if c == 0:
         return tuple(clamp(c, 0.0, 1.0) for c in (y, y, y))
 
-    h %= 1.0
-    h *= 6.0
-    if h < 1:
+    h = ((h % 1.0) * 6.0)
+    sector = int(h)
+    if sector == 0:
         # implies (p==r and h==(g-b)/d and g>=b)
         th = h
         tm = wr + wg * th
-    elif h < 2:
+    elif sector == 1:
         # implies (p==g and h==((b-r)/d)+2.0 and b<r)
         th = 2.0 - h
         tm = wg + wr * th
-    elif h < 3:
+    elif sector == 2:
         # implies (p==g and h==((b-r)/d)+2.0 and b>=g)
         th = h - 2.0
         tm = wg + wb * th
-    elif h < 4:
+    elif sector == 3:
         # implies (p==b and h==((r-g)/d)+4.0 and r<g)
         th = 4.0 - h
         tm = wb + wg * th
-    elif h < 5:
+    elif sector == 4:
         # implies (p==b and h==((r-g)/d)+4.0 and r>=g)
         th = h - 4.0
         tm = wb + wr * th
-    else:
+    else:  # sector == 5
         # implies (p==r and h==(g-b)/d and g<b)
         th = 6.0 - h
         tm = wr + wb * th
+
     # Calculate the RGB components in sorted order
     if tm >= y:
         p = y + y*c*(1-tm)/tm
@@ -139,17 +141,6 @@ def hcy_to_rgb(h, c, y, w_rgb=None):
         n = y - (1-y)*c*tm/(1-tm)
 
     # Back to RGB order
-    if h < 1:
-        rgb = (p, o, n)
-    elif h < 2:
-        rgb = (o, p, n)
-    elif h < 3:
-        rgb = (n, p, o)
-    elif h < 4:
-        rgb = (n, o, p)
-    elif h < 5:
-        rgb = (o, n, p)
-    else:
-        rgb = (p, n, o)
-
+    sector = int(h)
+    rgb = [(n, o, p)[i] for i in _swizzle.FROM_MIN2MAX_TO_RGB[sector]]
     return tuple(clamp(c, 0.0, 1.0) for c in rgb)
