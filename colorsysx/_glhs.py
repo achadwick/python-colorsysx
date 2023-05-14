@@ -134,9 +134,9 @@ def glhs_to_rgb(l, h, s, w_min2max=None, w_rgb=None):
     sector = int((h % 1.0) * 6.0)
     f = ((h % 1.0) * 6.0) - sector
     if (sector % 2) == 0:
-        g = f
+        ff = f
     else:
-        g = 1.0 - f
+        ff = 1.0 - f
 
     # If the weights are in RGB order,
     # swizzle them back into min-to-max order now.
@@ -146,24 +146,24 @@ def glhs_to_rgb(l, h, s, w_min2max=None, w_rgb=None):
     w_min, w_mid, w_max = w_min2max
 
     # Calculate the RGB components in min-to-max order
-    l_q = (w_mid * g) + w_max
+    l_q = (w_mid * ff) + w_max
     if l <= l_q:
         c_min = (1 - s) * l
         c_mid = (
-            ((g * l) + (c_min * ((1-g)*w_max - (g*w_min)))) /
-            (w_max + (g * w_mid))
+            ((ff * l) + (c_min * ((1-ff)*w_max - (ff*w_min)))) /
+            (w_max + (ff * w_mid))
         )
         c_max = (l - (w_mid * c_mid) - (w_min * c_min)) / w_max
     else:
         c_max = s + ((1 - s) * l)
         c_mid = (
-            (((1 - g)*l) - (c_max * (((1-g)*w_max) - (g*w_min)))) /
-            (((1-g)*w_mid) + w_min)
+            (((1 - ff)*l) - (c_max * (((1-ff)*w_max) - (ff*w_min)))) /
+            (((1-ff)*w_mid) + w_min)
         )
         if w_min > 0:
             c_min = (l - (w_max * c_max) - (w_mid * c_mid)) / w_min
         else:
-            c_min = (c_mid - (g * c_max)) / (1 - g)
+            c_min = (c_mid - (ff * c_max)) / (1 - ff)
 
     # Back to RGB order
     mapping_indices = _swizzle.FROM_MIN2MAX_TO_RGB[sector]
