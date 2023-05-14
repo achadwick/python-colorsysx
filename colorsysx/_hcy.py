@@ -56,33 +56,52 @@ def rgb_to_hcy(r, g, b, w_rgb=None):
     """
 
     # Luma is a weighted sum of the three components.
-    wr, wg, wb = (w_rgb is None) and DEFAULT_WEIGHTS or w_rgb
-    y = wr*r + wg*g + wb*b
+    if w_rgb is None:
+        w_rgb = DEFAULT_WEIGHTS
 
     # Hue. First pick a sector based on the greatest RGB component, then add
     # the scaled difference of the other two RGB components.
-    p = max(r, g, b)
-    n = min(r, g, b)
-    d = p - n   # An absolute measure of chroma: only used for scaling.
-    if n == p:
-        h = 0.0
-    elif p == r:
-        h = (g - b)/d
-        if h < 0:
-            h += 6.0
-    elif p == g:
-        h = ((b - r)/d) + 2.0
-    else:  # p==b
-        h = ((r - g)/d) + 4.0
-    h /= 6.0
+    (comp_min, w_min), (comp_mid, w_mid), (comp_max, w_max) \
+        = sorted(zip([r, g, b], w_rgb))
 
-    # Chroma, relative to the RGB gamut envelope.
-    if r == g == b:
-        # Avoid a division by zero for the achromatic case.
-        c = 0.0
+    if comp_max == comp_min:
+        return (0.0, 0.0, comp_max)
+
+    # Compute hue
+    mid_minus_min = comp_mid - comp_min
+    max_minus_min = comp_max - comp_min
+    max_minus_mid = comp_max - comp_mid
+    if r > g >= b:
+        sector = 0
+    elif g >= r > b:
+        sector = 1
+    elif g > b >= r:
+        sector = 2
+    elif b >= g > r:
+        sector = 3
+    elif b > r >= g:
+        sector = 4
+    else:  # r >= b > g
+        sector = 5
+
+    # Hue within sector
+    if (sector % 2) == 0:
+        f = mid_minus_min / max_minus_min
     else:
-        # For the derivation, see the GLHS paper.
-        c = max((y-n)/y, (p-y)/(1-y))
+        f = max_minus_mid / max_minus_min
+
+    h = (sector + f) / 6.0
+
+    # Compute luma and critial luma
+    y = w_max*comp_max + w_mid*comp_mid + w_min*comp_min
+    y_q = w_mid * mid_minus_min / max_minus_min + w_max
+
+    # Then relative chroma
+    if y <= y_q:
+        c = (y - comp_min) / y
+    else:
+        c = (comp_max - y) / (1.0 - y)
+
     return (h, c, y)
 
 
@@ -97,50 +116,43 @@ def hcy_to_rgb(h, c, y, w_rgb=None):
 
     """
 
-    wr, wg, wb = (w_rgb is None) and DEFAULT_WEIGHTS or w_rgb
+    if w_rgb is None:
+        w_rgb = DEFAULT_WEIGHTS
 
     # Achromatic case
     if c == 0:
         return tuple(clamp(c, 0.0, 1.0) for c in (y, y, y))
 
-    h = ((h % 1.0) * 6.0)
-    sector = int(h)
-    if sector == 0:
-        # implies (p==r and h==(g-b)/d and g>=b)
-        th = h
-        tm = wr + wg * th
-    elif sector == 1:
-        # implies (p==g and h==((b-r)/d)+2.0 and b<r)
-        th = 2.0 - h
-        tm = wg + wr * th
-    elif sector == 2:
-        # implies (p==g and h==((b-r)/d)+2.0 and b>=g)
-        th = h - 2.0
-        tm = wg + wb * th
-    elif sector == 3:
-        # implies (p==b and h==((r-g)/d)+4.0 and r<g)
-        th = 4.0 - h
-        tm = wb + wg * th
-    elif sector == 4:
-        # implies (p==b and h==((r-g)/d)+4.0 and r>=g)
-        th = h - 4.0
-        tm = wb + wr * th
-    else:  # sector == 5
-        # implies (p==r and h==(g-b)/d and g<b)
-        th = 6.0 - h
-        tm = wr + wb * th
-
-    # Calculate the RGB components in sorted order
-    if tm >= y:
-        p = y + y*c*(1-tm)/tm
-        o = y + y*c*(th-tm)/tm
-        n = y - (y*c)
+    # Pick a sector based on the hue angle.
+    # This determines the order in which {r, g, b} are selected from
+    # the {min, mid, max} components we're going to be calculating
+    # later.
+    sector = int((h % 1.0) * 6.0)
+    f = ((h % 1.0) * 6.0) - sector
+    if (sector % 2) == 0:
+        ff = f
     else:
-        p = y + (1-y)*c
-        o = y + (1-y)*c*(th-tm)/(1-tm)
-        n = y - (1-y)*c*tm/(1-tm)
+        ff = 1.0 - f
+
+    # Put the weights in min-to-max order.
+    mapping_indices = _swizzle.FROM_RGB_TO_MIN2MAX[sector]
+    w_min, w_mid, w_max = (w_rgb[i] for i in mapping_indices)
+
+    # Calculate the RGB components in min-to-max order.
+    y_q = (w_mid * ff) + w_max
+    if y <= y_q:
+        comp_max = y + y*c*(1-y_q)/y_q
+        comp_mid = y + y*c*(ff-y_q)/y_q
+        comp_min = y - (y*c)
+    else:
+        comp_max = y + (1-y)*c
+        comp_mid = y + (1-y)*c*(ff-y_q)/(1-y_q)
+        comp_min = y - (1-y)*c*y_q/(1-y_q)
 
     # Back to RGB order
-    sector = int(h)
-    rgb = [(n, o, p)[i] for i in _swizzle.FROM_MIN2MAX_TO_RGB[sector]]
-    return tuple(clamp(c, 0.0, 1.0) for c in rgb)
+    comps_min2max = (comp_min, comp_mid, comp_max)
+    comps_rgb = [
+        clamp(comps_min2max[i], 0.0, 1.0)
+        for i in _swizzle.FROM_MIN2MAX_TO_RGB[sector]
+    ]
+    return comps_rgb
