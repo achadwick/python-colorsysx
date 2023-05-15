@@ -78,10 +78,8 @@ def test_round_trips():
             assert 0 <= g1 <= 1
             assert 0 <= b1 <= 1
 
-            # Hey hey, big errors.
-            # Do some numeric analysis of the number of ops,
-            # figure out why it's so big.
-            # It's probably fine if it's <= 1/256 though...
+            # Oddly, the current GLHS implementation is worse (20×Epsilon)
+            # for the same 3 sets of coefficients.
             fudge = 9
             assert abs(r1 - r0) <= EPSILON*fudge
             assert abs(g1 - g0) <= EPSILON*fudge
