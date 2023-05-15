@@ -22,8 +22,8 @@ lightness of different colour hues.
 absolute chroma when manipulating luma.
 
 [HCY][2] is intuitive to use, and its lightness term is the same as
-YUV's. It's particularly useful when manipulating colours to meet WCAG
-2.2 or draft 3.0 WCAG contrast criteria.
+YUV's. It's particularly useful when manipulating colours to meet [WCAG
+2.2][9] or [draft 3.0 WCAG][10] contrast criteria.
 
 [GLHS][3] is a generalization of the cylindrical coordinate spaces
 provided in `colorsysx` and `colorsys`. It can be parameterised to
@@ -91,3 +91,5 @@ compliant.
 [6]: https://github.com/achadwick/python-colorsysx/issues
 [7]: https://tox.wiki/
 [8]: https://flit.pypa.io
+[9]: https://www.w3.org/TR/WCAG22/#dfn-contrast-ratio
+[10]: https://github.com/Myndex/SAPC-APCA/
