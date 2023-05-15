@@ -68,7 +68,7 @@ def rgb_to_glhs(r, g, b, w_min2max=None, w_rgb=None):
 
     # Handle the achromatic case first to avoid a division by zero later.
     if c_max == c_min:
-        return (c_max, 0., 0.)
+        return (c_max, 0.0, 0.0)
 
     # Compute hue
     mid_minus_min = c_mid - c_min
