@@ -8,7 +8,7 @@ description = "Extra, human-relevant, colour spaces derived from RGB."
 license = {file = "LICENSE"}
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "License :: OSI Approved :: MIT License",
     "Topic :: Multimedia :: Graphics :: Presentation",
     "Topic :: Software Development :: Libraries",
     "Intended Audience :: Developers",
