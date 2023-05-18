@@ -5,7 +5,7 @@
 
 # colorsysX
 
-🎨👁️ _Extra, human-relevant, colour spaces derived from RGB_
+🌈👁️ _Extra, human-relevant, colour spaces derived from RGB_
 
 This package extends the standard Python library's `colorsys` module
 with a few additional, useful, colour spaces. The models of colour
@@ -77,7 +77,7 @@ tox -p
 
 # Run the system version of Python interactively in a venv with
 # colorsysx available.
-tox -e py python
+tox -e repl
 ```
 
 The build system is [flit][8], and the project is PEP 621 and PEP 517
