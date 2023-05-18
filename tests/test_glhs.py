@@ -13,14 +13,14 @@ import itertools
 
 EPSILON = float_info.epsilon
 WEIGHTS_MIN2MAX = (
-    colorsysx.weights.W_MIN2MAX_HSI,
-    colorsysx.weights.W_MIN2MAX_HSV,
-    colorsysx.weights.W_MIN2MAX_HLS,
+    colorsysx.weights.SortedComponentWeights.HSI,
+    colorsysx.weights.SortedComponentWeights.HSV,
+    colorsysx.weights.SortedComponentWeights.HLS,
 )
 WEIGHTS_RGB = (
-    colorsysx.weights.W_RGB_REC601,
-    colorsysx.weights.W_RGB_REC709,
-    colorsysx.weights.W_RGB_REC2020,
+    colorsysx.weights.ComponentWeights.REC601,
+    colorsysx.weights.ComponentWeights.REC709,
+    colorsysx.weights.ComponentWeights.REC2020,
 )
 
 
@@ -145,7 +145,7 @@ def test_equivalences():
         # "HLS" double hexcone model
         (gl1, gh1, gs1) = colorsysx.rgb_to_glhs(
             r, g, b,
-            w_min2max=colorsysx.weights.W_MIN2MAX_HLS,
+            w_min2max=colorsysx.weights.SortedComponentWeights.HLS,
         )
         (h1, l1, s1) = colorsys.rgb_to_hls(r, g, b)
         assert abs(gl1 - l1) <= EPSILON*fudge
@@ -155,7 +155,7 @@ def test_equivalences():
         # "HSV" hexcone model
         (gl2, gh2, gs2) = colorsysx.rgb_to_glhs(
             r, g, b,
-            w_min2max=colorsysx.weights.W_MIN2MAX_HSV,
+            w_min2max=colorsysx.weights.SortedComponentWeights.HSV,
         )
         (h2, s2, v2) = colorsys.rgb_to_hsv(r, g, b)
         assert abs(gl2 - v2) <= EPSILON*fudge
@@ -165,11 +165,11 @@ def test_equivalences():
         # "HCY" luma-based model
         (gl3, gh3, gs3) = colorsysx.rgb_to_glhs(
             r, g, b,
-            w_rgb=colorsysx.weights.W_RGB_REC709,
+            w_rgb=colorsysx.weights.ComponentWeights.REC709,
         )
         (h3, c3, y3) = colorsysx.rgb_to_hcy(
             r, g, b,
-            w_rgb=colorsysx.weights.W_RGB_REC709,
+            w_rgb=colorsysx.weights.ComponentWeights.REC709,
         )
         assert abs(gl3 - y3) <= EPSILON*fudge
         assert abs(gs3 - c3) <= EPSILON*fudge

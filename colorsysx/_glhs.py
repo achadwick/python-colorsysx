@@ -31,7 +31,7 @@ from . import _swizzle
 
 # Default values::
 
-DEFAULT_WEIGHTS_MIN2MAX = weights.W_MIN2MAX_HLS
+DEFAULT_WEIGHTS_MIN2MAX = weights.SortedComponentWeights.HLS
 
 
 # Conversion functions::

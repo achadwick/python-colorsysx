@@ -37,7 +37,7 @@ from ._helpers import clamp
 
 # Default values::
 
-DEFAULT_WEIGHTS = weights.W_RGB_REC709
+DEFAULT_WEIGHTS = weights.ComponentWeights.REC709
 
 
 # Conversion functions::

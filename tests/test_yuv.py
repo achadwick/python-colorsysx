@@ -12,9 +12,9 @@ import itertools
 
 EPSILON = float_info.epsilon
 WEIGHTS = (
-    colorsysx.weights.W_RGB_REC601,
-    colorsysx.weights.W_RGB_REC709,
-    colorsysx.weights.W_RGB_REC2020,
+    colorsysx.weights.ComponentWeights.REC601,
+    colorsysx.weights.ComponentWeights.REC709,
+    colorsysx.weights.ComponentWeights.REC2020,
 )
 
 
