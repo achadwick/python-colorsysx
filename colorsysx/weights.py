@@ -6,6 +6,8 @@ conversion functions.
 
 """
 
+# Imports::
+
 import sys
 
 if sys.version_info >= (3, 11):
@@ -20,7 +22,9 @@ else:
         pass
 
 
-class ComponentWeights (_EnumBase):
+# Const namespaces::
+
+class RGBWeights (_EnumBase):
     """Weights for each RGB component, in typical red-green-blue order.
 
     These weighting tuples are appropriate for conversions which use a
@@ -36,6 +40,9 @@ class ComponentWeights (_EnumBase):
     These weightings are appropriate for use with both the YUV and the
     GLHS pairs of conversion functions.
 
+    ("ComponentWeights" is a deprecated alias for this class name. It
+    will be removed in v2.0.)
+
     """
     # (R, G, B)
     REC601 = (0.299, 0.587, 0.114)
@@ -43,13 +50,13 @@ class ComponentWeights (_EnumBase):
     REC2020 = (0.2627, 0.678, 0.0593)
 
 
-class SortedComponentWeights (_EnumBase):
+class SortedWeights (_EnumBase):
     """Weights for RGB components when sorted by ascending numeric value.
 
     These weighting tuples are appropriate for the GLHS conversion
-    functions, where using different weights for the w_min2max parameter
-    makes the conversion operate like other well known cylindrical
-    lighness/hue/saturation models.
+    functions, where using different weights for the "weights_sorted"
+    parameter makes the conversion operate like other well known
+    cylindrical lighness/hue/saturation models.
 
     The weights are used to make a weighted sum of the three RGB
     components ordered by their numeric value, lowest first.
@@ -76,8 +83,17 @@ class SortedComponentWeights (_EnumBase):
 
     * https://doi.org/10.1006/cgip.1993.1019
 
+    ("SortedComponentWeights" is a deprecated alias for this class name.
+    It will be removed in v2.0.)
+
     """
     # (Min, Mid, Max)
     HSI = (1/3, 1/3, 1/3)
     HSV = (0, 0, 1)
     HLS = (1/2, 0, 1/2)
+
+
+# Deprecated aliases, to be removed in version 2.0::
+
+ComponentWeights = RGBWeights
+SortedComponentWeights = SortedWeights

@@ -16,9 +16,9 @@ EPSILON = float_info.epsilon
 
 def test_comp_weights():
     weights = (
-        colorsysx.weights.ComponentWeights.REC601,
-        colorsysx.weights.ComponentWeights.REC709,
-        colorsysx.weights.ComponentWeights.REC2020,
+        colorsysx.weights.RGBWeights.REC601,
+        colorsysx.weights.RGBWeights.REC709,
+        colorsysx.weights.RGBWeights.REC2020,
     )
     for w in weights:
         assert len(w) == 3
@@ -29,9 +29,9 @@ def test_comp_weights():
 
 def test_sorted_comp_weights():
     weights = (
-        colorsysx.weights.SortedComponentWeights.HSI,
-        colorsysx.weights.SortedComponentWeights.HSV,
-        colorsysx.weights.SortedComponentWeights.HLS,
+        colorsysx.weights.SortedWeights.HSI,
+        colorsysx.weights.SortedWeights.HSV,
+        colorsysx.weights.SortedWeights.HLS,
     )
     for w in weights:
         assert len(w) == 3

@@ -12,24 +12,24 @@ import itertools
 # Module vars::
 
 EPSILON = float_info.epsilon
-WEIGHTS_MIN2MAX = (
-    colorsysx.weights.SortedComponentWeights.HSI,
-    colorsysx.weights.SortedComponentWeights.HSV,
-    colorsysx.weights.SortedComponentWeights.HLS,
+WEIGHTS_SORTED = (
+    colorsysx.weights.SortedWeights.HSI,
+    colorsysx.weights.SortedWeights.HSV,
+    colorsysx.weights.SortedWeights.HLS,
 )
 WEIGHTS_RGB = (
-    colorsysx.weights.ComponentWeights.REC601,
-    colorsysx.weights.ComponentWeights.REC709,
-    colorsysx.weights.ComponentWeights.REC2020,
+    colorsysx.weights.RGBWeights.REC601,
+    colorsysx.weights.RGBWeights.REC709,
+    colorsysx.weights.RGBWeights.REC2020,
 )
 
 
 # Test funcs::
 
-def test_grey_is_grey_min2max():
+def test_grey_is_grey_sorted():
     """Neutral grey is always neutral grey."""
-    for w in WEIGHTS_MIN2MAX:
-        l, h, s = colorsysx.rgb_to_glhs(0.5, 0.5, 0.5, w_min2max=w)
+    for w in WEIGHTS_SORTED:
+        l, h, s = colorsysx.rgb_to_glhs(0.5, 0.5, 0.5, weights_sorted=w)
         assert abs(l - 0.5) <= EPSILON
         assert h <= EPSILON
         assert s <= EPSILON  # just a convention
@@ -38,22 +38,22 @@ def test_grey_is_grey_min2max():
 def test_grey_is_grey_rgb():
     """Neutral grey is always neutral grey."""
     for w in WEIGHTS_RGB:
-        l, h, s = colorsysx.rgb_to_glhs(0.5, 0.5, 0.5, w_rgb=w)
+        l, h, s = colorsysx.rgb_to_glhs(0.5, 0.5, 0.5, weights_rgb=w)
         assert abs(l - 0.5) <= EPSILON
         assert h <= EPSILON
         assert s <= EPSILON  # just a convention
 
 
-def test_ranges_min2max():
+def test_ranges_sorted():
     """Output should lie within the stated bounds, and cover that range"""
     n = 16
     min_l, max_l = [1, 0]
     min_h, max_h = [1, 0]
     min_s, max_s = [1, 0]
-    for w in WEIGHTS_MIN2MAX:
+    for w in WEIGHTS_SORTED:
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
-            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, w_min2max=w)
+            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, weights_sorted=w)
             assert 0-EPSILON <= l <= 1+EPSILON
             assert 0-EPSILON <= h <= 1+EPSILON
             assert 0-EPSILON <= s <= 1+EPSILON
@@ -77,7 +77,7 @@ def test_ranges_rgb():
     for w in WEIGHTS_RGB:
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
-            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, w_rgb=w)
+            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, weights_rgb=w)
             assert 0-EPSILON <= l <= 1+EPSILON
             assert 0-EPSILON <= h <= 1+EPSILON
             assert 0-EPSILON <= s <= 1+EPSILON
@@ -92,16 +92,16 @@ def test_ranges_rgb():
     assert max_s > 1-EPSILON
 
 
-def test_round_trips_min2max():
+def test_round_trips_sorted():
     """Should be able to convert to GHLS and back to RGB accurately."""
     n = 16
 
-    for w in WEIGHTS_MIN2MAX:
+    for w in WEIGHTS_SORTED:
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
-            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, w_min2max=w)
+            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, weights_sorted=w)
             assert 0 <= l <= 1
-            r1, g1, b1 = colorsysx.glhs_to_rgb(l, h, s, w_min2max=w)
+            r1, g1, b1 = colorsysx.glhs_to_rgb(l, h, s, weights_sorted=w)
             assert 0 <= r1 <= 1
             assert 0 <= g1 <= 1
             assert 0 <= b1 <= 1
@@ -119,9 +119,9 @@ def test_round_trips_rgb():
     for w in WEIGHTS_RGB:
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
-            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, w_rgb=w)
+            l, h, s = colorsysx.rgb_to_glhs(r0, g0, b0, weights_rgb=w)
             assert 0 <= l <= 1
-            r1, g1, b1 = colorsysx.glhs_to_rgb(l, h, s, w_rgb=w)
+            r1, g1, b1 = colorsysx.glhs_to_rgb(l, h, s, weights_rgb=w)
             assert 0 <= r1 <= 1
             assert 0 <= g1 <= 1
             assert 0 <= b1 <= 1
@@ -145,7 +145,7 @@ def test_equivalences():
         # "HLS" double hexcone model
         (gl1, gh1, gs1) = colorsysx.rgb_to_glhs(
             r, g, b,
-            w_min2max=colorsysx.weights.SortedComponentWeights.HLS,
+            weights_sorted=colorsysx.weights.SortedWeights.HLS,
         )
         (h1, l1, s1) = colorsys.rgb_to_hls(r, g, b)
         assert abs(gl1 - l1) <= EPSILON*fudge
@@ -155,7 +155,7 @@ def test_equivalences():
         # "HSV" hexcone model
         (gl2, gh2, gs2) = colorsysx.rgb_to_glhs(
             r, g, b,
-            w_min2max=colorsysx.weights.SortedComponentWeights.HSV,
+            weights_sorted=colorsysx.weights.SortedWeights.HSV,
         )
         (h2, s2, v2) = colorsys.rgb_to_hsv(r, g, b)
         assert abs(gl2 - v2) <= EPSILON*fudge
@@ -165,11 +165,11 @@ def test_equivalences():
         # "HCY" luma-based model
         (gl3, gh3, gs3) = colorsysx.rgb_to_glhs(
             r, g, b,
-            w_rgb=colorsysx.weights.ComponentWeights.REC709,
+            weights_rgb=colorsysx.weights.RGBWeights.REC709,
         )
         (h3, c3, y3) = colorsysx.rgb_to_hcy(
             r, g, b,
-            w_rgb=colorsysx.weights.ComponentWeights.REC709,
+            weights_rgb=colorsysx.weights.RGBWeights.REC709,
         )
         assert abs(gl3 - y3) <= EPSILON*fudge
         assert abs(gs3 - c3) <= EPSILON*fudge

@@ -12,9 +12,9 @@ import itertools
 
 EPSILON = float_info.epsilon
 WEIGHTS = (
-    colorsysx.weights.ComponentWeights.REC601,
-    colorsysx.weights.ComponentWeights.REC709,
-    colorsysx.weights.ComponentWeights.REC2020,
+    colorsysx.weights.RGBWeights.REC601,
+    colorsysx.weights.RGBWeights.REC709,
+    colorsysx.weights.RGBWeights.REC2020,
 )
 
 
@@ -23,7 +23,7 @@ WEIGHTS = (
 def test_grey_is_grey():
     """Neutral grey is always neutral grey."""
     for w in WEIGHTS:
-        h, c, y = colorsysx.rgb_to_hcy(0.5, 0.5, 0.5, w_rgb=w)
+        h, c, y = colorsysx.rgb_to_hcy(0.5, 0.5, 0.5, weights_rgb=w)
         assert abs(y - 0.5) <= EPSILON
         assert c <= EPSILON
         assert h <= EPSILON  # just a convention
@@ -33,11 +33,11 @@ def test_pure_components_match_weights():
     """Pure r, g, and b produce the corresponding weight value in y."""
     for w in WEIGHTS:
         wr, wg, wb = w
-        h, c, y = colorsysx.rgb_to_hcy(1, 0, 0, w_rgb=w)
+        h, c, y = colorsysx.rgb_to_hcy(1, 0, 0, weights_rgb=w)
         assert abs(y - wr) <= EPSILON
-        h, c, y = colorsysx.rgb_to_hcy(0, 1, 0, w_rgb=w)
+        h, c, y = colorsysx.rgb_to_hcy(0, 1, 0, weights_rgb=w)
         assert abs(y - wg) <= EPSILON
-        h, c, y = colorsysx.rgb_to_hcy(0, 0, 1, w_rgb=w)
+        h, c, y = colorsysx.rgb_to_hcy(0, 0, 1, weights_rgb=w)
         assert abs(y - wb) <= EPSILON
 
 
@@ -50,7 +50,7 @@ def test_ranges():
     for w in WEIGHTS:
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
-            h, c, y = colorsysx.rgb_to_hcy(r0, g0, b0, w_rgb=w)
+            h, c, y = colorsysx.rgb_to_hcy(r0, g0, b0, weights_rgb=w)
             assert 0-EPSILON <= h <= 1+EPSILON
             assert 0-EPSILON <= c <= 1+EPSILON
             assert 0-EPSILON <= y <= 1+EPSILON
@@ -71,9 +71,9 @@ def test_round_trips():
     for w in WEIGHTS:
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
-            h, c, y = colorsysx.rgb_to_hcy(r0, g0, b0, w_rgb=w)
+            h, c, y = colorsysx.rgb_to_hcy(r0, g0, b0, weights_rgb=w)
             assert 0 <= y <= 1
-            r1, g1, b1 = colorsysx.hcy_to_rgb(h, c, y, w_rgb=w)
+            r1, g1, b1 = colorsysx.hcy_to_rgb(h, c, y, weights_rgb=w)
             assert 0 <= r1 <= 1
             assert 0 <= g1 <= 1
             assert 0 <= b1 <= 1

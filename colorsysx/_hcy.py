@@ -37,32 +37,34 @@ from . import _swizzle
 
 # Default values::
 
-DEFAULT_WEIGHTS = weights.ComponentWeights.REC709
+DEFAULT_WEIGHTS = weights.RGBWeights.REC709
 
 
 # Conversion functions::
 
-def rgb_to_hcy(r, g, b, w_rgb=None):
+def rgb_to_hcy(r, g, b, weights_rgb=None, w_rgb=None):
     """Converts from RGB to HCY.
 
-    The r, g, and b parameters are floats between 0 and 1 inclusive.  If
-    given, w_rgb specifies the luma weighting coefficients for the r, g,
-    and b components, in that order. It must be a tuple of 3 floats that
-    sum to 1, but this is not enforced. The default is
-    colorsysx.weights.W_RGB_REC709.
+    The "r", "g", and "b" parameters are floats between 0 and 1
+    inclusive. If given, "weights_rgb specifies the luma weighting
+    coefficients for the r, g, and b components, in that order. It must
+    be a tuple of 3 floats that sum to 1, but this is not enforced. The
+    default is colorsysx.weights.RGBWeights.REC709.
 
     Returns a tuple (h, c, y).
 
     """
 
+    weights_rgb = w_rgb or weights_rgb  # FIXME: remove in 2.0
+
     # Luma is a weighted sum of the three components.
-    if w_rgb is None:
-        w_rgb = DEFAULT_WEIGHTS
+    if weights_rgb is None:
+        weights_rgb = DEFAULT_WEIGHTS
 
     # Hue. First pick a sector based on the greatest RGB component, then add
     # the scaled difference of the other two RGB components.
     (comp_min, w_min), (comp_mid, w_mid), (comp_max, w_max) \
-        = sorted(zip([r, g, b], w_rgb))
+        = sorted(zip([r, g, b], weights_rgb))
 
     if comp_max == comp_min:
         return (0.0, 0.0, comp_max)
@@ -105,19 +107,22 @@ def rgb_to_hcy(r, g, b, w_rgb=None):
     return (h, c, y)
 
 
-def hcy_to_rgb(h, c, y, w_rgb=None):
+def hcy_to_rgb(h, c, y, weights_rgb=None, w_rgb=None):
     """Converts from HCY to RGB.
 
-    The h, c, and y parameters are floats between 0 and 1 inclusive.
-    w_rgb has the same meaning and default value as in rgb_to_hcy().
+    The "h", "c", and "y" parameters are floats between 0 and 1 inclusive.
+    "weights_rgb" has the same meaning and default value as it does in
+    "rgb_to_hcy()".
 
     Returns a tuple of floats in the form (r, g, b), where each
     component is between 0 and 1 inclusive.
 
     """
 
-    if w_rgb is None:
-        w_rgb = DEFAULT_WEIGHTS
+    weights_rgb = w_rgb or weights_rgb  # FIXME: remove in 2.0
+
+    if weights_rgb is None:
+        weights_rgb = DEFAULT_WEIGHTS
 
     # Achromatic case
     if c == 0:
@@ -135,8 +140,8 @@ def hcy_to_rgb(h, c, y, w_rgb=None):
         ff = 1.0 - f
 
     # Put the weights in min-to-max order.
-    mapping_indices = _swizzle.FROM_RGB_TO_MIN2MAX[sector]
-    w_min, w_mid, w_max = (w_rgb[i] for i in mapping_indices)
+    mapping_indices = _swizzle.FROM_RGB_TO_SORTED[sector]
+    w_min, w_mid, w_max = (weights_rgb[i] for i in mapping_indices)
 
     # Calculate the RGB components in min-to-max order.
     y_q = (w_mid * ff) + w_max
@@ -150,9 +155,9 @@ def hcy_to_rgb(h, c, y, w_rgb=None):
         comp_min = y - (1-y)*c*y_q/(1-y_q)
 
     # Back to RGB order
-    comps_min2max = (comp_min, comp_mid, comp_max)
+    comps_sorted = (comp_min, comp_mid, comp_max)
     comps_rgb = [
-        clamp(comps_min2max[i], 0.0, 1.0)
-        for i in _swizzle.FROM_MIN2MAX_TO_RGB[sector]
+        clamp(comps_sorted[i], 0.0, 1.0)
+        for i in _swizzle.FROM_SORTED_TO_RGB[sector]
     ]
     return comps_rgb

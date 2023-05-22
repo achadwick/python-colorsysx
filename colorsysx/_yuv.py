@@ -37,24 +37,30 @@ from ._helpers import clamp
 
 # Default values::
 
-DEFAULT_WEIGHTS = weights.ComponentWeights.REC709
+DEFAULT_WEIGHTS = weights.RGBWeights.REC709
 
 
 # Conversion functions::
 
-def rgb_to_yuv(r, g, b, w_rgb=None):
+def rgb_to_yuv(r, g, b, weights_rgb=None, w_rgb=None):
     """Convert RGB to YUV (YPbBr).
 
-    The r, g, and b parameters are floats bwtween 0 and 1 inclusive.
-    If given, w_rgb specifies the luma weighting coefficients for the r,
-    g, and b components, in that order. It must be a tuple of 3 floats
-    that sum to 1, but this is not enforced. The default is
-    colorsysx.weights.W_RGB_REC709.
+    The "r", "g", and "b" parameters are floats between 0 and 1
+    inclusive.  If given, "weights_rgb" specifies the luma weighting
+    coefficients for the R, G, and B components, in that order. It must
+    be a tuple of 3 floats that sum to 1, but this is not enforced. The
+    default is colorsysx.weights.RGBWeights.REC709.
+
+    "w_rgb" is a deprecated override for "weights_rgb". It will be removed
+    in colorsysx 2.0.
 
     Returns a tuple (y, u, v).
 
     """
-    kr, kg, kb = (w_rgb is None) and DEFAULT_WEIGHTS or w_rgb
+    weights_rgb = w_rgb or weights_rgb  # FIXME: remove in 2.0
+    if weights_rgb is None:
+        weights_rgb = DEFAULT_WEIGHTS
+    kr, kg, kb = weights_rgb
     color_matrix = [
         [kr,               kg,                kb],
         [-0.5 * kr/(1-kb), -0.5 * kg/(1-kb),  0.5],
@@ -64,20 +70,27 @@ def rgb_to_yuv(r, g, b, w_rgb=None):
     return (y, u, v)
 
 
-def yuv_to_rgb(y, u, v, w_rgb=None):
+def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None):
     """Convert from YUV to RGB.
 
-    The y, u, and v parameters are floats between 0 and 1 inclusive.
-    w_rgb has the same meaning and default value as in rgb_to_yuv().
+    The "y", "u", and "v" parameters are floats between 0 and 1
+    inclusive.  "weights" has the same meaning and default value as it
+    does in rgb_to_yuv().
+
+    "w_rgb" is a deprecated override for "weights_rgb". It will be
+    removed in colorsysx 2.0.
 
     Returns a tuple (r, g, b), clamped to between 0 and 1 inclusive.
 
     """
-    kr, kg, kb = (w_rgb is None) and DEFAULT_WEIGHTS or w_rgb
+    weights_rgb = w_rgb or weights_rgb  # FIXME: remove in 2.0
+    if weights_rgb is None:
+        weights_rgb = DEFAULT_WEIGHTS
+    kr, kg, kb = weights_rgb
     inverse_color_matrix = [
         [1., 0.,                 2 - 2*kr],
         [1., -(kb/kg)*(2-2*kb), -(kr/kg)*(2-2*kr)],
         [1., 2-2*kb,             0.],
     ]
     [[r], [g], [b]] = matmul(inverse_color_matrix, [[y], [u], [v]])
-    return (clamp(c, 0, 1) for c in (r, g, b))
+    return tuple(clamp(c, 0, 1) for c in (r, g, b))
