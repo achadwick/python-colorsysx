@@ -56,3 +56,26 @@ def test_round_trips():
             assert abs(r1 - r0) <= EPSILON * 2  # doubled, due to clamping
             assert abs(g1 - g0) <= EPSILON * 2
             assert abs(b1 - b0) <= EPSILON * 2
+
+
+def test_unclamped():
+    """Test that unclamped results can be returned and interpreted.
+
+    Returning colours outside the RGB gamut isn't that helpful really,
+    but it makes testing for this condition possible.
+
+    """
+    y, u, v = colorsysx.rgb_to_yuv(0, 0, 1)  # The bluest possible blue…
+    assert y < 0.3                         # … has a very low luma.
+
+    # Now try to make an extra-bright bluest blue that doesn't exist.
+    y += 0.1
+
+    # Now conversion back to rgb will go out of gamut,
+    # if it's not clamped.
+    rgb_clamped = colorsysx.yuv_to_rgb(y, u, v, clamp=True)
+    rgb_unclamped = colorsysx.yuv_to_rgb(y, u, v, clamp=False)
+    assert rgb_clamped != rgb_unclamped
+    assert not all([0.0 <= c <= 1.0 for c in rgb_unclamped])
+    assert max(rgb_unclamped) > 1.0
+    assert all([0.0 <= c <= 1.0 for c in rgb_clamped])

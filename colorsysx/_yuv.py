@@ -31,8 +31,7 @@ References:
 # Imports::
 
 from . import weights
-from ._helpers import matmul
-from ._helpers import clamp
+from . import _helpers as helpers
 
 
 # Default values::
@@ -66,11 +65,12 @@ def rgb_to_yuv(r, g, b, weights_rgb=None, w_rgb=None):
         [-0.5 * kr/(1-kb), -0.5 * kg/(1-kb),  0.5],
         [0.5,              -0.5 * kg/(1-kr), -0.5 * kb/(1-kr)],
     ]
-    [[y], [u], [v]] = matmul(color_matrix, [[r], [g], [b]])
+    [[y], [u], [v]] = helpers.matmul(color_matrix, [[r], [g], [b]])
     return (y, u, v)
 
 
-def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None):
+def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None,
+               clamp=True):
     """Convert from YUV to RGB.
 
     The "y", "u", and "v" parameters are floats between 0 and 1
@@ -80,7 +80,9 @@ def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None):
     "w_rgb" is a deprecated override for "weights_rgb". It will be
     removed in colorsysx 2.0.
 
-    Returns a tuple (r, g, b), clamped to between 0 and 1 inclusive.
+    By default, the returned (R, G, B) components are constrained to lie
+    within the interval [0, 1]. Set "clamp" to False if you want to
+    perform your own checking.
 
     """
     weights_rgb = w_rgb or weights_rgb  # FIXME: remove in 2.0
@@ -92,5 +94,8 @@ def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None):
         [1., -(kb/kg)*(2-2*kb), -(kr/kg)*(2-2*kr)],
         [1., 2-2*kb,             0.],
     ]
-    [[r], [g], [b]] = matmul(inverse_color_matrix, [[y], [u], [v]])
-    return tuple(clamp(c, 0, 1) for c in (r, g, b))
+    [[r], [g], [b]] = helpers.matmul(inverse_color_matrix, [[y], [u], [v]])
+    if clamp:
+        return tuple(helpers.clamp(c, 0, 1) for c in (r, g, b))
+    else:
+        return (r, g, b)
