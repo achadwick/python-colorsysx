@@ -69,12 +69,13 @@ def rgb_to_yuv(r, g, b, weights_rgb=None, w_rgb=None):
     return (y, u, v)
 
 
-def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None,
-               clamp=True):
+def yuv_to_rgb(y, u, v, weights_rgb=DEFAULT_WEIGHTS, w_rgb=None, clamp=True):
     """Convert from YUV to RGB.
 
-    The "y", "u", and "v" parameters are floats between 0 and 1
-    inclusive.  "weights" has the same meaning and default value as it
+    The "y" parameter is a float in the interval [0, 1].
+    The range for "u" is approximately [-0.115, 0.115].
+    The range for "v" is approximately [-0.5, 0.5].
+    "weights" has the same meaning and default value as it
     does in rgb_to_yuv().
 
     "w_rgb" is a deprecated override for "weights_rgb". It will be
