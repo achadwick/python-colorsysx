@@ -1,0 +1,5 @@
+# Options for the flake8 linter (and vim-flake8).
+# E741 (ambiguous variable name): "l" is used for lightness a lot.
+[flake8]
+extend-ignore = E741
+exclude = .git,.nox,__pycache__,build,dist

@@ -68,16 +68,16 @@ which can be used to tune the colour model being used.
 ColorsysX is developed on GitHub as [achadwick/python-colorsysx][5].
 Please report bugs via the [issue tracker][6] there.
 
-ColorsysX uses [tox][7] to run tests and manage utility Python
+ColorsysX uses [nox][7] to run tests and manage utility Python
 environments. Examples:
 
 ```sh
-# Run all standard tests in parallel on all available Pythons
-tox -p
+# Run all standard tests on all available Pythons
+nox
 
-# Run the system version of Python interactively in a venv with
+# Run the main version of Python interactively in a venv with
 # colorsysx available.
-tox -e repl
+nox -s repl
 ```
 
 The build system is [flit][8], and the project is PEP 621 and PEP 517
@@ -89,7 +89,7 @@ compliant.
 [4]: https://pypi.org/project/colorsysx/
 [5]: https://github.com/achadwick/python-colorsysx
 [6]: https://github.com/achadwick/python-colorsysx/issues
-[7]: https://tox.wiki/
+[7]: https://nox.thea.codes
 [8]: https://flit.pypa.io
 [9]: https://www.w3.org/TR/WCAG22/#dfn-contrast-ratio
 [10]: https://github.com/Myndex/SAPC-APCA/
