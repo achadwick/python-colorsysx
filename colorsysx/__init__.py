@@ -18,7 +18,7 @@ colorsysx.weights module for details.
 
 """
 
-__version__ = "1.1pre2"
+__version__ = "1.1pre3"
 
 # Imports::
 
@@ -27,12 +27,12 @@ __version__ = "1.1pre2"
 from ._yuv import rgb_to_yuv, yuv_to_rgb  # noqa: F401
 from ._hcy import rgb_to_hcy, hcy_to_rgb  # noqa: F401
 from ._glhs import rgb_to_glhs, glhs_to_rgb  # noqa: F401
+from ._yiq import rgb_to_yiq, yiq_to_rgb  # noqa: F401
 
 # Also make the stock colorsys funcs available.
 from colorsys import \
     rgb_to_hls, hls_to_rgb, \
-    rgb_to_hsv, hsv_to_rgb, \
-    rgb_to_yiq, yiq_to_rgb  # noqa: F401
+    rgb_to_hsv, hsv_to_rgb  # noqa: F401
 
 # Exports::
 
