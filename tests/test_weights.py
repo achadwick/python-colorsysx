@@ -2,7 +2,7 @@
 
 # Imports::
 
-from .context import colorsysx
+import colorsysx
 
 from pytest import approx
 

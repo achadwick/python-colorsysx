@@ -2,7 +2,7 @@
 
 from packaging.version import Version
 
-from .context import colorsysx
+import colorsysx
 
 
 def test_v2_deprecation_aliases():
