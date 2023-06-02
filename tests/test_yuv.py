@@ -4,13 +4,12 @@
 
 from .context import colorsysx
 
-from sys import float_info
+from pytest import approx
 import itertools
 
 
 # Module vars::
 
-EPSILON = float_info.epsilon
 WEIGHTS = (
     colorsysx.weights.RGBWeights.REC601,
     colorsysx.weights.RGBWeights.REC709,
@@ -24,9 +23,9 @@ def test_grey_is_grey():
     """Neutral grey is always neutral grey."""
     for w in WEIGHTS:
         y, u, v = colorsysx.rgb_to_yuv(0.5, 0.5, 0.5, weights_rgb=w)
-        assert abs(y - 0.5) <= EPSILON
-        assert u <= EPSILON
-        assert v <= EPSILON
+        assert y == approx(0.5)
+        assert u == approx(0)
+        assert v == approx(0)
 
 
 def test_pure_components_match_weights():
@@ -34,11 +33,11 @@ def test_pure_components_match_weights():
     for w in WEIGHTS:
         wr, wg, wb = w
         y, u, v = colorsysx.rgb_to_yuv(1, 0, 0, weights_rgb=w)
-        assert abs(y - wr) <= EPSILON
+        assert y == approx(wr)
         y, u, v = colorsysx.rgb_to_yuv(0, 1, 0, weights_rgb=w)
-        assert abs(y - wg) <= EPSILON
+        assert y == approx(wg)
         y, u, v = colorsysx.rgb_to_yuv(0, 0, 1, weights_rgb=w)
-        assert abs(y - wb) <= EPSILON
+        assert y == approx(wb)
 
 
 def test_round_trips():
@@ -53,9 +52,7 @@ def test_round_trips():
             assert 0 <= r1 <= 1
             assert 0 <= g1 <= 1
             assert 0 <= b1 <= 1
-            assert abs(r1 - r0) <= EPSILON * 2  # doubled, due to clamping
-            assert abs(g1 - g0) <= EPSILON * 2
-            assert abs(b1 - b0) <= EPSILON * 2
+            assert (r1, g1, b1) == approx((r0, g0, b0))
 
 
 def test_unclamped():

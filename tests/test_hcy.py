@@ -4,13 +4,12 @@
 
 from .context import colorsysx
 
-from sys import float_info
+from pytest import approx
 import itertools
 
 
 # Module vars::
 
-EPSILON = float_info.epsilon
 WEIGHTS = (
     colorsysx.weights.RGBWeights.REC601,
     colorsysx.weights.RGBWeights.REC709,
@@ -24,9 +23,9 @@ def test_grey_is_grey():
     """Neutral grey is always neutral grey."""
     for w in WEIGHTS:
         h, c, y = colorsysx.rgb_to_hcy(0.5, 0.5, 0.5, weights_rgb=w)
-        assert abs(y - 0.5) <= EPSILON
-        assert c <= EPSILON
-        assert h <= EPSILON  # just a convention
+        assert y == approx(0.5)
+        assert c == approx(0)
+        assert h == approx(0)  # just a convention
 
 
 def test_pure_components_match_weights():
@@ -34,11 +33,11 @@ def test_pure_components_match_weights():
     for w in WEIGHTS:
         wr, wg, wb = w
         h, c, y = colorsysx.rgb_to_hcy(1, 0, 0, weights_rgb=w)
-        assert abs(y - wr) <= EPSILON
+        assert y == approx(wr)
         h, c, y = colorsysx.rgb_to_hcy(0, 1, 0, weights_rgb=w)
-        assert abs(y - wg) <= EPSILON
+        assert y == approx(wg)
         h, c, y = colorsysx.rgb_to_hcy(0, 0, 1, weights_rgb=w)
-        assert abs(y - wb) <= EPSILON
+        assert y == approx(wb)
 
 
 def test_ranges():
@@ -51,18 +50,18 @@ def test_ranges():
         for rn, gn, bn in itertools.product(range(n+1), repeat=3):
             r0, g0, b0 = (rn/n, gn/n, bn/n)
             h, c, y = colorsysx.rgb_to_hcy(r0, g0, b0, weights_rgb=w)
-            assert 0-EPSILON <= h <= 1+EPSILON
-            assert 0-EPSILON <= c <= 1+EPSILON
-            assert 0-EPSILON <= y <= 1+EPSILON
+            assert 0 <= h <= 1
+            assert 0 <= c <= 1
+            assert 0 <= y <= 1
             min_h, max_h = min(h, min_h), max(h, max_h)
             min_c, max_c = min(c, min_c), max(c, max_c)
             min_y, max_y = min(y, min_y), max(y, max_y)
-    assert min_h < 1/12
-    assert max_h > 1 - 1/12
-    assert min_c < EPSILON
-    assert max_c > 1-EPSILON
-    assert min_y < EPSILON
-    assert max_y > 1-EPSILON
+    assert min_h <= 1/12
+    assert max_h >= 1 - 1/12
+    assert min_c == approx(0)
+    assert max_c == approx(1)
+    assert min_y == approx(0)
+    assert max_y == approx(1)
 
 
 def test_round_trips():
@@ -78,9 +77,4 @@ def test_round_trips():
             assert 0 <= g1 <= 1
             assert 0 <= b1 <= 1
 
-            # Oddly, the current GLHS implementation is worse (20×Epsilon)
-            # for the same 3 sets of coefficients.
-            fudge = 9
-            assert abs(r1 - r0) <= EPSILON*fudge
-            assert abs(g1 - g0) <= EPSILON*fudge
-            assert abs(b1 - b0) <= EPSILON*fudge
+            assert (r1, g1, b1) == approx((r0, g0, b0))

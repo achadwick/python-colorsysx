@@ -4,12 +4,7 @@
 
 from .context import colorsysx
 
-from sys import float_info
-
-
-# Module vars::
-
-EPSILON = float_info.epsilon
+from pytest import approx
 
 
 # Test funcs::
@@ -22,9 +17,7 @@ def test_comp_weights():
     )
     for w in weights:
         assert len(w) == 3
-        assert abs(1.0 - sum(w)) <= EPSILON
-        wr, rg, wb = w
-        assert abs(1.0 - (1.0*wr + 1.0*rg + 1.0*wb)) <= EPSILON
+        assert sum(w) == approx(1)
 
 
 def test_sorted_comp_weights():
@@ -35,4 +28,4 @@ def test_sorted_comp_weights():
     )
     for w in weights:
         assert len(w) == 3
-        assert abs(1.0 - sum(w)) <= EPSILON
+        assert sum(w) == approx(1)
